@@ -1,0 +1,161 @@
+#include "../includes/rt1.h"
+
+void ft_put_pixel(t_scene *scene, double deep, int i, int j)
+{
+int p;
+
+p = 4 * (WIN_WIDTH * j  + i);
+
+if (deep == 0) 
+{
+scene->image.data[p] =0x00;
+scene->image.data[p+1] =0x00;
+scene->image.data[p+2] =0x00;
+}
+else 
+{
+scene->image.data[p] = 0x42 + (deep * 2.42);
+scene->image.data[p+1] = 0x32 + (deep * 2.42);
+scene->image.data[p+2] = 0x22 + (deep * 2.42);
+}
+
+}
+
+void ft_init_scene(t_scene *scene)
+{
+scene->camera.place.x=0;
+scene->camera.place.y=0;
+scene->camera.place.z=0;
+scene->object.R=1;
+scene->object.center.x=0;
+scene->object.center.y=-1;
+scene->object.center.z=3;
+scene->object.type=1;
+scene->d = 1;
+}
+
+double ft_dotprod(t_coord v1, t_coord v2)
+{
+return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
+}
+
+t_coord ft_addv(t_coord v1, t_coord v2)
+{
+t_coord t;
+t.x=v1.x+v2.x;
+t.y=v1.y+v2.y;
+t.z=v1.z+v2.z;
+return(t);
+}
+
+t_coord ft_substrv(t_coord v1, t_coord v2)
+{
+t_coord t;
+t.x=v1.x-v2.x;
+t.y=v1.y-v2.y;
+t.z=v1.z-v2.z;
+return(t);
+}
+
+double ft_quadrsolution(double a, double b, double c)
+{
+double d;
+double s1;
+double s2;
+
+d = (b*b) - (4 * a * c);
+
+if (d<0)
+s1 = 0;
+else
+{
+s1= (-b +(double) sqrt(d))/(2*a); 
+s2= (-b - (double) sqrt(d))/(2*a);
+if ((s1>1) && (s2 > 1) && (s2 < s1))
+s1=s2;
+if ((s1 < 1) && (s2 > 1))
+s1=s2;
+if ((s1<1) && (s2 < 1))
+s1=0;
+}
+return(s1);
+}
+
+double ft_intersect(t_scene *scene)
+{
+double a;
+double b;
+double c;
+double x;
+t_coord oc;
+
+oc = ft_substrv(scene->camera.place, scene->object.center);
+
+a = ft_dotprod(scene->cur_point, scene->cur_point);
+b = 2* ft_dotprod(oc, scene->cur_point);
+c = ft_dotprod(oc,oc) - scene->object.R * scene->object.R;
+
+x = ft_quadrsolution(a,b,c);
+/*if (x>0)
+{
+printf("x=%f\n",scene->cur_point.x);
+printf("y=%f\n",scene->cur_point.y);
+printf("a=%f\n",a);
+printf("b=%f\n",b);
+printf("c=%f\n",c);
+printf("x=%f\n",x);
+printf("*******\n");
+}
+*/
+return(x);
+}
+
+void ft_conv2to3(t_scene *scene, int x, int y)
+{
+scene->cur_point.x = x *(double) VIEW_WIDTH / WIN_WIDTH;
+scene->cur_point.y = y * (double) VIEW_HEIGHT / WIN_HEIGHT;
+scene->cur_point.z = scene->d;
+}
+
+void ft_traceray(t_scene *scene)
+{
+int i;
+int j;
+double x;
+i = 0;
+j = 0;
+
+while ( i < WIN_WIDTH)
+{
+while (j < WIN_HEIGHT)
+{
+ft_conv2to3(scene, i-WIN_WIDTH/2, j-WIN_HEIGHT/2);
+x = ft_intersect(scene);
+//ft_put_pixel(scene, x, i, j);
+j++;
+}
+j = 0;
+i++;
+}
+
+}
+
+
+int main(int argc, char **argv)
+{
+t_scene *scene;
+if ((argc == 2) && (ft_strequ(argv[1], "sfera")))
+{
+if (!(scene = (t_scene *)malloc(sizeof (t_scene))))
+{
+write (1,"error mem",9);
+	exit(1);
+}
+else
+{
+ft_init_scene(scene);
+ft_traceray(scene);
+}
+}
+return(0);
+}

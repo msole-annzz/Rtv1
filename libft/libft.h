@@ -6,7 +6,7 @@
 /*   By: msole <msole@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/12 14:42:12 by msole             #+#    #+#             */
-/*   Updated: 2020/07/10 11:38:50 by msole            ###   ########.fr       */
+/*   Updated: 2020/08/12 16:40:41 by msole            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <string.h>
 # include <stdlib.h>
 # include <fcntl.h>
+
 # define BUFF_SIZE 100
 
 typedef struct		s_list
@@ -75,7 +76,7 @@ size_t				ft_strlen(const char *str);
 char				*ft_strmap(char const *s, char (*f)(char));
 char				*ft_strmapi(char const *s, char(*f)(unsigned int, char));
 char				*ft_strncat(char *restrict s1,
-							const char *restrict s2, size_t n);
+						const char *restrict s2, size_t n);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
 char				*ft_strncpy(char *dst, const char *src, size_t len);
 int					ft_strnequ(char const *s1, char const *s2, size_t n);
